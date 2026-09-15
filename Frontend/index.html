@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Layer Protocol Visualizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col antialiased">
+
+  <!-- High-Visibility Header -->
+  <header class="w-full px-6 py-4 flex-none flex justify-between items-center bg-slate-900 border-b-2 border-sky-400 shadow-xl z-50">
+    <div class="flex items-center space-x-4">
+      <div class="p-2.5 bg-slate-800 border-2 border-sky-400 rounded-xl text-sky-400 shadow-md">
+        <i class="fa-solid fa-network-wired text-xl"></i>
+      </div>
+      <div>
+        <!-- STARK WHITE HIGH-CONTRAST HEADING -->
+        <h1 class="text-lg md:text-xl font-black tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">
+          COMPUTER NETWORKS <span class="text-sky-400 font-bold">|</span> APPLICATION LAYER VISUALIZER
+        </h1>
+        <p class="text-xs text-sky-300 font-extrabold tracking-wider uppercase">Multi-Layer Protocol Traversal & Hierarchical Process Simulator</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <div class="flex items-center space-x-2.5 text-xs bg-slate-950 border-2 border-emerald-400 px-4 py-1.5 rounded-full shadow-md">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        <span class="text-white font-bold">Server: <span class="text-emerald-400 font-black">FastAPI Active</span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-5 p-5 max-w-[1750px] mx-auto w-full min-h-0">
+    
+    <!-- LEFT PANEL: Controls (Browsing, Mail, Streaming) -->
+    <section class="lg:col-span-5 glass-panel rounded-xl flex flex-col overflow-hidden shadow-lg border border-slate-800">
+      <div class="px-5 py-3.5 border-b border-slate-800 bg-slate-900/60 flex items-center justify-between">
+        <h2 class="font-bold text-xs uppercase tracking-wider text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-sky-400"></i> Activity Controls & Flow Input
+        </h2>
+        <span class="text-xs px-2.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono font-bold">Panel 1</span>
+      </div>
+
+      <!-- Activity Tabs -->
+      <div class="grid grid-cols-3 gap-1.5 p-1.5 bg-slate-950 m-4 rounded-xl border border-slate-800">
+        <button id="tab-browsing" onclick="selectActivity('browsing')" class="py-2.5 px-3 text-xs md:text-sm font-bold rounded-lg transition flex items-center justify-center gap-2 bg-slate-800 text-white border border-slate-600 shadow-sm">
+          <i class="fa-solid fa-globe text-sky-400"></i> Web Browsing
+        </button>
+        <button id="tab-mail" onclick="selectActivity('mail')" class="py-2.5 px-3 text-xs md:text-sm font-bold rounded-lg transition flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-slate-900">
+          <i class="fa-solid fa-paper-plane"></i> Send Mail
+        </button>
+        <button id="tab-streaming" onclick="selectActivity('streaming')" class="py-2.5 px-3 text-xs md:text-sm font-bold rounded-lg transition flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-slate-900">
+          <i class="fa-solid fa-play"></i> Video Stream
+        </button>
+      </div>
+
+      <!-- Dynamic Forms -->
+      <div class="px-5 flex-1 overflow-y-auto scroll-custom space-y-4">
+        <!-- Browsing Form -->
+        <form id="form-browsing" onsubmit="handleFormSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs md:text-sm font-bold text-slate-200 mb-1.5 uppercase tracking-wider">Target Web URL</label>
+            <div class="flex rounded-xl overflow-hidden border border-slate-700 bg-slate-950 focus-within:border-sky-400 transition-all">
+              <span class="inline-flex items-center px-3.5 border-r border-slate-800 bg-slate-900 text-sky-400 text-xs md:text-sm font-mono font-bold">https://</span>
+              <input type="text" id="browse-url" value="example.com/index.html" class="w-full bg-transparent px-3 py-2 text-xs md:text-sm text-white font-bold focus:outline-none font-mono">
+            </div>
+            <p class="text-xs text-slate-400 mt-1.5">Triggers DNS cache check, recursive traversal, TCP/TLS handshake, and HTTP GET.</p>
+          </div>
+          <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl text-xs md:text-sm font-bold border border-slate-600 transition flex items-center justify-center gap-2 shadow-sm">
+            <i class="fa-solid fa-play text-xs text-sky-400"></i> VISIT WEBSITE (HTTP FLOW)
+          </button>
+        </form>
+
+        <!-- Mail Form -->
+        <form id="form-mail" onsubmit="handleFormSubmit(event)" class="space-y-3.5 hidden">
+          <div>
+            <label class="block text-xs md:text-sm font-bold text-slate-200 mb-1 uppercase tracking-wider">Recipient (To)</label>
+            <input type="email" id="mail-to" value="user@domain.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs md:text-sm text-white font-mono font-bold focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs md:text-sm font-bold text-slate-200 mb-1 uppercase tracking-wider">Subject</label>
+            <input type="text" id="mail-subject" value="Assignment Submission" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs md:text-sm text-white font-bold focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs md:text-sm font-bold text-slate-200 mb-1 uppercase tracking-wider">Body</label>
+            <textarea id="mail-body" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs md:text-sm text-white font-bold focus:outline-none resize-none">Hello, sending project submission attached.</textarea>
+          </div>
+          <p class="text-xs text-slate-400">Triggers DNS MX resolution, TCP port 25 connection, full SMTP conversation, and IMAP access.</p>
+          <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl text-xs md:text-sm font-bold border border-slate-600 transition flex items-center justify-center gap-2 shadow-sm">
+            <i class="fa-solid fa-paper-plane text-xs text-sky-400"></i> SEND EMAIL (SMTP FLOW)
+          </button>
+        </form>
+
+        <!-- Streaming Form -->
+        <form id="form-streaming" onsubmit="handleFormSubmit(event)" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs md:text-sm font-bold text-slate-200 mb-1.5 uppercase tracking-wider">Stream Quality</label>
+            <select id="stream-quality" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs md:text-sm text-white font-mono font-bold focus:outline-none">
+              <option value="1080p">1080p (Full HD - HLS Stream)</option>
+              <option value="4k">4K (Ultra HD - Adaptive Stream)</option>
+            </select>
+            <p class="text-xs text-slate-400 mt-1.5">Triggers DNS CDN lookup, QUIC/TLS setup, HLS Manifest (.m3u8), and MPEG-TS segment decoding.</p>
+          </div>
+          <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl text-xs md:text-sm font-bold border border-slate-600 transition flex items-center justify-center gap-2 shadow-sm">
+            <i class="fa-solid fa-film text-xs text-sky-400"></i> START STREAM (HLS FLOW)
+          </button>
+        </form>
+
+        <!-- Execution Log -->
+        <div class="pt-2 pb-4">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Terminal Execution Log</label>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          </div>
+          <div id="activity-log" class="bg-slate-950 rounded-xl p-3 border border-slate-800 font-mono text-xs md:text-sm text-emerald-400 h-36 overflow-y-auto scroll-custom space-y-1 shadow-inner">
+            <p class="text-slate-500">[System] Protocol engine initialized.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Protocol Visualizer Engine -->
+    <section class="lg:col-span-7 right-panel-bg rounded-2xl flex flex-col overflow-hidden shadow-lg border border-slate-800">
+      <div class="px-5 py-3.5 border-b border-slate-800 bg-slate-900/60 flex items-center justify-between">
+        <h2 class="font-bold text-xs uppercase tracking-wider text-slate-200 flex items-center gap-2.5">
+          <i class="fa-solid fa-chart-diagram text-sky-400"></i> Protocol Visualization Engine
+        </h2>
+        
+        <!-- Interactive Controls -->
+        <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 shadow-md">
+          <button onclick="prevStep()" id="btn-prev" class="w-8 h-8 flex items-center justify-center rounded-lg text-xs text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-backward"></i></button>
+          <button onclick="togglePlayPause()" id="btn-play" class="px-3.5 h-8 flex items-center justify-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs md:text-sm font-bold border border-slate-600 transition">
+            <i id="play-icon" class="fa-solid fa-pause text-xs"></i> Pause
+          </button>
+          <button onclick="nextStep()" id="btn-next" class="w-8 h-8 flex items-center justify-center rounded-lg text-xs text-slate-300 hover:text-white hover:bg-slate-800 transition"><i class="fa-solid fa-forward"></i></button>
+          <button onclick="resetPlayback()" class="w-8 h-8 flex items-center justify-center rounded-lg text-xs text-slate-300 hover:text-rose-400 hover:bg-slate-800 transition"><i class="fa-solid fa-rotate-left"></i></button>
+        </div>
+      </div>
+
+      <div class="flex-1 p-5 flex flex-col gap-4 overflow-y-auto scroll-custom">
+        <!-- Node Topology Frame -->
+        <div class="visualizer-card rounded-xl p-4 relative flex items-center justify-between">
+          <!-- Client Node -->
+          <div class="flex flex-col items-center z-10">
+            <div id="node-client" class="w-14 h-14 bg-slate-950 border border-slate-700 rounded-xl flex items-center justify-center text-sky-400 text-xl transition-all duration-300 shadow-md">
+              <i class="fa-solid fa-desktop"></i>
+            </div>
+            <span class="text-xs md:text-sm font-bold mt-2 text-white">Client Node</span>
+            <span class="text-xs text-sky-400 font-mono font-bold">192.168.1.45</span>
+          </div>
+
+          <!-- Packet Track Lane Bar -->
+          <div class="flex-1 mx-8 relative flex flex-col items-center">
+            <div class="w-full h-3 bg-slate-950 relative rounded-full border border-slate-800 shadow-inner flex items-center px-1">
+              <div id="packet-indicator" class="w-14 h-2 bg-sky-400 rounded-full absolute transition-all duration-500 shadow-md"></div>
+            </div>
+            <span id="protocol-badge" class="mt-2.5 text-xs md:text-sm font-mono px-3.5 py-0.5 bg-slate-900 text-sky-300 border border-slate-700 rounded-full font-bold tracking-wide">
+              IDLE
+            </span>
+          </div>
+
+          <!-- Server Node -->
+          <div class="flex flex-col items-center z-10">
+            <div id="node-server" class="w-14 h-14 bg-slate-950 border border-slate-700 rounded-xl flex items-center justify-center text-emerald-400 text-xl transition-all duration-300 shadow-md">
+              <i class="fa-solid fa-server"></i>
+            </div>
+            <span id="server-label" class="text-xs md:text-sm font-bold mt-2 text-white">Target Server</span>
+            <span class="text-xs text-emerald-400 font-mono font-bold">Remote Endpoint</span>
+          </div>
+        </div>
+
+        <!-- Protocol Sequence Checklist Panel -->
+        <div class="sequence-panel-outlined rounded-xl p-4 flex flex-col min-h-[190px]">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-xs md:text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-sky-400"></i> Protocol Sequence Checklist
+            </span>
+            <span id="step-counter" class="text-xs md:text-sm text-sky-300 font-mono font-bold bg-slate-950 px-3 py-0.5 rounded border border-sky-800">Step 1/1</span>
+          </div>
+          <div id="sequence-container" class="space-y-2 flex-1 overflow-y-auto scroll-custom pr-1"></div>
+        </div>
+
+        <!-- Header & Payload Inspector -->
+        <div class="visualizer-card rounded-xl p-4">
+          <div class="text-xs md:text-sm font-bold text-white mb-2 flex items-center justify-between">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-code text-indigo-400"></i> Multi-Layer Header & Payload Inspector</span>
+            <span id="inspect-protocol" class="text-xs text-emerald-300 font-mono font-bold bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-800">DNS</span>
+          </div>
+          <pre id="packet-payload" class="font-mono text-xs md:text-sm text-amber-200/90 overflow-x-auto whitespace-pre-wrap bg-slate-950 p-3.5 rounded-xl border border-slate-800 h-28 scroll-custom shadow-inner">Select or run a step to inspect exact headers and PDU payload attributes.</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/activityController.js"></script>
+  <script src="js/visualizerEngine.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
