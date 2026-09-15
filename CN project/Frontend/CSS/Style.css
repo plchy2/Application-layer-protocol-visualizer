@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&family=JetBrains+Mono:wght@600;700;800&display=swap');
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #020617;
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(37, 99, 235, 0.3) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(16, 185, 129, 0.2) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: #f8fafc;
+  font-size: 15px; /* Larger base font size */
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Glass Panels */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(16px);
+  border: 1.5px solid #3b82f6;
+}
+
+/* Right Visualizer Panel */
+.right-panel-bg {
+  background: linear-gradient(145deg, #0f172a 0%, #020617 100%);
+  border: 1.5px solid #3b82f6;
+}
+
+.visualizer-card {
+  background: #0f172a;
+  border: 1.5px solid #38bdf8;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.9);
+}
+
+/* OUTLINED SEQUENCE CHECKLIST PANEL */
+.sequence-panel-outlined {
+  background: #091e36;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+/* Custom Glows */
+.glow-blue {
+  box-shadow: 0 0 25px 2px rgba(59, 130, 246, 0.8);
+}
+
+/* Custom Scrollbar */
+.scroll-custom::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scroll-custom::-webkit-scrollbar-track {
+  background: #020617;
+}
+.scroll-custom::-webkit-scrollbar-thumb {
+  background: #38bdf8;
+  border-radius: 9999px;
+}
+.scroll-custom::-webkit-scrollbar-thumb:hover {
+  background: #60a5fa;
+}
