@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -7,6 +9,11 @@ app = FastAPI(
     description="Dual-Panel Network Protocol Visualizer Backend",
     version="1.0.0"
 )
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "Frontend"
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -283,3 +290,4 @@ def simulate_streaming(req: StreamRequest):
             }
         ]
     }
+app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
