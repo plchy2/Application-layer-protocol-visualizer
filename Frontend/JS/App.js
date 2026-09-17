@@ -3,7 +3,7 @@
  * Handles backend communication and fallback management.
  */
 
-const API_BASE = "http://localhost:8000/api/simulate";
+const API_BASE = "/api/simulate";
 
 const FALLBACK_FLOWS = {
   browsing: [
