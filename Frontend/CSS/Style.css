@@ -2,12 +2,8 @@
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: #0b0f17;
-  background-image: 
-    radial-gradient(at 20% 20%, rgba(30, 41, 59, 0.5) 0px, transparent 40%),
-    radial-gradient(at 80% 80%, rgba(15, 23, 42, 0.8) 0px, transparent 40%);
-  background-attachment: fixed;
-  color: #f1f5f9;
+  background-color: #f8fafc;
+  color: #0f172a;
   font-size: 15px;
 }
 
@@ -17,28 +13,29 @@ code, pre, .font-mono {
 
 /* Glass Panels */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(100, 108, 120, 0.88);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(15, 23, 42, 0.25);
 }
 
+/* Right panel */
 .right-panel-bg {
-  background: rgba(11, 15, 23, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.2);
 }
 
 /* Card Containers */
 .visualizer-card {
-  background: rgba(20, 27, 41, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(15, 23, 42, 0.18);
 }
 
 /* Sequence Checklist Panel */
 .sequence-panel-outlined {
-  background: rgba(13, 19, 31, 0.75);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.2);
 }
 
 /* Custom Scrollbars */
@@ -46,13 +43,16 @@ code, pre, .font-mono {
   width: 5px;
   height: 5px;
 }
+
 .scroll-custom::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .scroll-custom::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.25);
   border-radius: 9999px;
 }
+
 .scroll-custom::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(15, 23, 42, 0.4);
 }
