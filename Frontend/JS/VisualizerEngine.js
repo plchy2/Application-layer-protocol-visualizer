@@ -1,100 +1,94 @@
-/**
- * Protocol Visualizer Engine
- * Controls state, step animation, auto-playback, DOM updates.
- */
+// Render the protocol checklist based on active layer ('app' or 'transport')
+function renderChecklist() {
+  const container = document.getElementById('protocol-checklist');
+  if (!container) return;
 
-let currentStepIndex = 0;
-let isPlaying = false;
-let autoPlayTimer = null;
-let activeFlowData = [];
+  // Retrieve current layer dataset (app_flow or transport_flow)
+  const steps = typeof getCurrentStepData === 'function' 
+    ? getCurrentStepData() 
+    : (activeFlowData.transport_flow || activeFlowData.app_flow || activeFlowData || []);
 
-function renderSteps() {
-  const container = document.getElementById('sequence-container');
-  if (!container || !activeFlowData || activeFlowData.length === 0) return;
+  if (!steps || steps.length === 0) {
+    container.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">No protocol flow steps loaded. Execute a simulation to start.</div>`;
+    return;
+  }
 
-  container.innerHTML = '';
+  container.innerHTML = steps.map((item, index) => {
+    const isL4 = currentLayer === 'transport';
+    const isStopWait = item.protocol && item.protocol.includes('Stop-and-Wait');
 
-  activeFlowData.forEach((item, index) => {
-    const isCurrent = index === currentStepIndex;
-    const isDone = index < currentStepIndex;
-
-    const div = document.createElement('div');
-    div.onclick = () => jumpToStep(index);
-    div.className = `p-3 rounded-lg border text-xs cursor-pointer transition flex items-center justify-between ${
-      isCurrent 
-        ? 'bg-slate-900 border-sky-400 text-white shadow-md' 
-        : isDone 
-        ? 'bg-slate-950/40 border-slate-800 text-slate-400' 
-        : 'bg-slate-950/20 border-slate-900 text-slate-600 opacity-50'
-    }`;
-
-    div.innerHTML = `
-      <div class="flex items-center gap-3">
-        <span class="w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] ${
-          isCurrent ? 'bg-sky-400 text-slate-950' : isDone ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-500'
-        }">${item.step}</span>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-bold ${isCurrent ? 'text-sky-300' : 'text-slate-200'}">${item.protocol}</span>
-            <span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700 font-mono">${item.pdu || 'PDU'}</span>
+    return `
+      <div class="p-3.5 bg-slate-950 border ${isStopWait ? 'border-sky-500/50 bg-sky-950/10' : 'border-slate-800'} rounded-xl transition hover:border-slate-700">
+        <div class="flex items-center justify-between mb-1.5">
+          <div class="flex items-center gap-2.5">
+            <span class="w-6 h-6 rounded-full ${isStopWait ? 'bg-sky-500 text-slate-950' : 'bg-slate-800 text-sky-400'} text-xs font-black flex items-center justify-center font-mono">
+              ${item.step || index + 1}
+            </span>
+            <span class="font-bold text-sm text-slate-100">${item.protocol || 'Protocol Event'}</span>
           </div>
-          <div class="text-[11px] text-slate-400 mt-0.5">${item.summary}</div>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded-full ${isStopWait ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-slate-800 text-slate-400'}">
+            ${item.layer || item.pdu || 'L4 - Transport'}
+          </span>
         </div>
+
+        <p class="text-xs text-slate-300 ml-8 font-mono leading-relaxed">${item.summary || item.details}</p>
+
+        ${isL4 && item.flags ? `
+          <div class="ml-8 mt-2 pt-2 border-t border-slate-900/80 flex flex-wrap gap-3 text-[11px] font-mono text-slate-400">
+            <span>Flags: <strong class="text-sky-400">${item.flags}</strong></span>
+            <span>Seq: <strong class="text-slate-200">${item.seq}</strong></span>
+            <span>Ack: <strong class="text-slate-200">${item.ack}</strong></span>
+            <span>Win: <strong class="text-slate-200">${item.win}</strong></span>${item.direction ? `<span class="ml-auto text-slate-500">${item.direction}</span>` : ''}
+          </div>
+        ` : ''}
       </div>
-      <i class="fa-solid ${item.direction.includes('client -> server') ? 'fa-arrow-right text-sky-400' : item.direction.includes('server -> client') ? 'fa-arrow-left text-emerald-400' : 'fa-arrows-rotate text-amber-400'}"></i>
     `;
-    container.appendChild(div);
-  });
+  }).join('');
+}
 
-  const activeData = activeFlowData[currentStepIndex];
-  if (!activeData) return;
-  
-  document.getElementById('step-counter').innerText = `Step ${currentStepIndex + 1}/${activeFlowData.length}`;
-  document.getElementById('inspect-protocol').innerText = activeData.layer || activeData.protocol;
-  document.getElementById('packet-payload').innerText = activeData.details;
-  document.getElementById('protocol-badge').innerText = activeData.layer || activeData.protocol;
-  document.getElementById('server-label').innerText = activeData.serverName || "Target Server";
+// Update UI button highlights when toggling views
+function updateToggleUI() {
+  const btnApp = document.getElementById('btn-layer-app');
+  const btnTransport = document.getElementById('btn-layer-transport');
 
-  const indicator = document.getElementById('packet-indicator');
-  if (indicator) {
-    if (activeData.direction.includes('client -> server')) {
-      indicator.style.transform = 'translateX(200px)';
-      indicator.className = "w-14 h-2 bg-sky-400 rounded-full absolute transition-all duration-500 shadow-md";
-    } else if (activeData.direction.includes('server -> client')) {
-      indicator.style.transform = 'translateX(0px)';
-      indicator.className = "w-14 h-2 bg-emerald-400 rounded-full absolute transition-all duration-500 shadow-md";
+  if (btnApp && btnTransport) {
+    if (currentLayer === 'app') {
+      btnApp.className = "px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition";
+      btnTransport.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
     } else {
-      indicator.style.transform = 'translateX(100px)';
-      indicator.className = "w-14 h-2 bg-amber-400 rounded-full absolute transition-all duration-500 shadow-md";
+      btnTransport.className = "px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition";
+      btnApp.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
     }
   }
 }
 
-function startPlayback() {
-  isPlaying = true;
-  const playIcon = document.getElementById('play-icon');
-  if (playIcon) playIcon.className = 'fa-solid fa-pause text-xs';
-  
-  if (autoPlayTimer) clearInterval(autoPlayTimer);
-  autoPlayTimer = setInterval(() => {
-    if (currentStepIndex < activeFlowData.length - 1) {
-      currentStepIndex++;
-      renderSteps();
-    } else {
-      pausePlayback();
-    }
-  }, 2500);
-}
+// Global switch function called by the UI buttons
+window.switchViewLayer = function(layer) {
+  if (typeof currentLayer !== 'undefined') {
+    currentLayer = layer;
+  }
+  updateToggleUI();
+  renderChecklist();
+  if (typeof logActivity === 'function') {
+    logActivity(`Switched view layer to: ${layer === 'app' ? 'Application Layer' : 'Transport Layer (L4)'}`);
+  }
+};
 
-function pausePlayback() {
-  isPlaying = false;
-  const playIcon = document.getElementById('play-icon');
-  if (playIcon) playIcon.className = 'fa-solid fa-play text-xs';
-  if (autoPlayTimer) clearInterval(autoPlayTimer);
-}
+// Global render trigger called by playback / app.js
+window.resetPlayback = function() {
+  updateToggleUI();
+  renderChecklist();
+};
 
-function togglePlayPause() { isPlaying ? pausePlayback() : startPlayback(); }
-function nextStep() { pausePlayback(); if (currentStepIndex < activeFlowData.length - 1) { currentStepIndex++; renderSteps(); } }
-function prevStep() { pausePlayback(); if (currentStepIndex > 0) { currentStepIndex--; renderSteps(); } }
-function jumpToStep(idx) { pausePlayback(); currentStepIndex = idx; renderSteps(); }
-function resetPlayback() { pausePlayback(); currentStepIndex = 0; renderSteps(); }
+window.startPlayback = function() {
+  updateToggleUI();
+  renderChecklist();
+};
+
+function logActivity(message) {
+  const logContainer = document.getElementById('terminal-log');
+  if (!logContainer) return;
+  const timeStr = new Date().toLocaleTimeString();
+  logContainer.innerHTML += `<div><span class="text-slate-600">[${timeStr}]</span> ${message}</div>`;
+  logContainer.scrollTop = logContainer.scrollHeight;
+}
