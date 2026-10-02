@@ -6,11 +6,10 @@
   <title>ProtoFlux | Dual-Panel Protocol Visualizer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
 
-  <!-- Navigation Header -->
+  <!-- Header -->
   <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shadow-md">
     <div class="flex items-center gap-3">
       <div class="bg-gradient-to-tr from-sky-500 to-indigo-500 p-2 rounded-xl text-white shadow-lg">
@@ -25,59 +24,27 @@
     </div>
   </header>
 
-  <!-- Main Dual-Panel Dashboard -->
+  <!-- Dashboard -->
   <main class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1600px] w-full mx-auto">
 
-    <!-- LEFT PANEL: Application Inputs -->
-    <section class="lg:col-span-5 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6 backdrop-blur-sm">
+    <!-- Left Panel -->
+    <section class="lg:col-span-5 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6">
       <div class="border-b border-slate-800 pb-3">
         <h2 class="font-bold text-slate-200 text-lg flex items-center gap-2">
           <i class="fa-solid fa-sliders text-sky-400"></i> Control Panel
         </h2>
-        <p class="text-xs text-slate-400 mt-1">Select an activity to simulate protocol flow</p>
       </div>
 
-      <!-- Activity Tab Selectors -->
-      <div class="grid grid-cols-3 gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
-        <button id="tab-browsing" onclick="selectTab('browsing')" class="py-2 text-xs font-semibold rounded-lg bg-sky-500 text-white shadow transition">Browsing</button>
-        <button id="tab-mail" onclick="selectTab('mail')" class="py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">Email</button>
-        <button id="tab-streaming" onclick="selectTab('streaming')" class="py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">Streaming</button>
-      </div>
-
-      <!-- Activity Input Forms -->
       <form id="activity-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
-        <!-- Browsing Input -->
-        <div id="form-browsing" class="space-y-2">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Target Domain / URL</label>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Target Domain / URL</label>
           <input type="text" id="browse-url" value="example.com/index.html" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
         </div>
-
-        <!-- Mail Input -->
-        <div id="form-mail" class="space-y-2 hidden">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Recipient Email</label>
-          <input type="email" id="mail-to" value="user@domain.com" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mt-2">Subject</label>
-          <input type="text" id="mail-subject" value="Assignment Submission" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mt-2">Body</label>
-          <textarea id="mail-body" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">Hello, sending project submission attached.</textarea>
-        </div>
-
-        <!-- Streaming Input -->
-        <div id="form-streaming" class="space-y-2 hidden">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400">Stream Quality</label>
-          <select id="stream-quality" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
-            <option value="1080p">1080p (Full HD)</option>
-            <option value="720p">720p (HD)</option>
-            <option value="4K">4K (Ultra HD)</option>
-          </select>
-        </div>
-
-        <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold text-sm rounded-xl shadow-lg hover:from-sky-400 hover:to-indigo-500 transition">
+        <button type="submit" class="w-full py-2.5 bg-sky-500 text-white font-bold text-sm rounded-xl shadow hover:bg-sky-400 transition">
           Execute Protocol Simulation
         </button>
       </form>
 
-      <!-- Terminal Log Window -->
       <div class="flex-1 flex flex-col min-h-[200px] bg-slate-950 rounded-xl border border-slate-800 p-3">
         <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest pb-2 border-b border-slate-900">Terminal Execution Log</div>
         <div id="terminal-log" class="flex-1 font-mono text-xs text-sky-400 pt-2 space-y-1 overflow-y-auto">
@@ -86,35 +53,35 @@
       </div>
     </section>
 
-    <!-- RIGHT PANEL: Protocol Sequence & Header Inspector -->
-    <section class="lg:col-span-7 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6 backdrop-blur-sm">
+    <!-- Right Panel -->
+    <section class="lg:col-span-7 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6">
       
-      <!-- Sequence Card Header with View Toggle Buttons -->
+      <!-- Sequence Card Header WITH VIEW LAYER TOGGLE -->
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-list-check text-sky-400"></i>
           <h2 class="font-bold text-slate-200">Protocol Sequence Checklist</h2>
         </div>
 
-        <!-- VIEW LAYER TOGGLE (Application vs Transport L4) -->
+        <!-- LAYER TOGGLE BUTTONS -->
         <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
-          <button id="btn-layer-app" onclick="switchViewLayer('app')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
+          <button id="btn-layer-app" type="button" onclick="switchViewLayer('app')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
             Application Layer
           </button>
-          <button id="btn-layer-transport" onclick="switchViewLayer('transport')" class="px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition">
+          <button id="btn-layer-transport" type="button" onclick="switchViewLayer('transport')" class="px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition">
             Transport Layer (L4)
           </button>
         </div>
       </div>
 
-      <!-- Step Checklist Render Container -->
-      <div id="protocol-checklist" class="space-y-3 flex-1 overflow-y-auto max-h-[480px] pr-1">
-        <!-- Dynamically rendered by JavaScript -->
+      <!-- Checklist Container -->
+      <div id="protocol-checklist" class="space-y-3 flex-1 overflow-y-auto max-h-[500px]">
+        <!-- Rendered by visualizerEngine.js -->
       </div>
     </section>
   </main>
 
-  <script src="js/app.js"></script>
-  <script src="js/visualizerEngine.js"></script>
+  <script src="js/app.js?v=2.0"></script>
+  <script src="js/visualizerEngine.js?v=2.0"></script>
 </body>
 </html>
