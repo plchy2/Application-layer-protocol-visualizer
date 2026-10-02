@@ -3,10 +3,18 @@ function renderChecklist() {
   const container = document.getElementById('protocol-checklist');
   if (!container) return;
 
-  // Retrieve current layer dataset (app_flow or transport_flow)
-  const steps = typeof getCurrentStepData === 'function' 
-    ? getCurrentStepData() 
-    : (activeFlowData.transport_flow || activeFlowData.app_flow || activeFlowData || []);
+  // Retrieve current layer dataset directly based on global currentLayer state
+  let steps = [];
+  if (typeof currentLayer !== 'undefined' && currentLayer === 'app') {
+    steps = (activeFlowData && activeFlowData.app_flow) ? activeFlowData.app_flow : [];
+  } else {
+    steps = (activeFlowData && activeFlowData.transport_flow) ? activeFlowData.transport_flow : [];
+  }
+
+  // Fallback if activeFlowData is structured as a flat array
+  if (!steps.length && Array.isArray(activeFlowData)) {
+    steps = activeFlowData;
+  }
 
   if (!steps || steps.length === 0) {
     container.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">No protocol flow steps loaded. Execute a simulation to start.</div>`;
@@ -14,11 +22,11 @@ function renderChecklist() {
   }
 
   container.innerHTML = steps.map((item, index) => {
-    const isL4 = currentLayer === 'transport';
-    const isStopWait = item.protocol && item.protocol.includes('Stop-and-Wait');
+    const isL4 = typeof currentLayer === 'undefined' || currentLayer === 'transport';
+    const isStopWait = item.protocol && (item.protocol.includes('Stop-and-Wait') || item.protocol.includes('ARQ'));
 
     return `
-      <div class="p-3.5 bg-slate-950 border ${isStopWait ? 'border-sky-500/50 bg-sky-950/10' : 'border-slate-800'} rounded-xl transition hover:border-slate-700">
+      <div class="p-3.5 bg-slate-950 border ${isStopWait ? 'border-sky-500/80 bg-sky-950/20 shadow-lg shadow-sky-500/10' : 'border-slate-800'} rounded-xl transition hover:border-slate-700">
         <div class="flex items-center justify-between mb-1.5">
           <div class="flex items-center gap-2.5">
             <span class="w-6 h-6 rounded-full ${isStopWait ? 'bg-sky-500 text-slate-950' : 'bg-slate-800 text-sky-400'} text-xs font-black flex items-center justify-center font-mono">
@@ -52,11 +60,11 @@ function updateToggleUI() {
   const btnTransport = document.getElementById('btn-layer-transport');
 
   if (btnApp && btnTransport) {
-    if (currentLayer === 'app') {
-      btnApp.className = "px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition";
+    if (typeof currentLayer !== 'undefined' && currentLayer === 'app') {
+      btnApp.className = "px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition font-bold";
       btnTransport.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
     } else {
-      btnTransport.className = "px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition";
+      btnTransport.className = "px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition font-bold";
       btnApp.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition";
     }
   }
@@ -64,9 +72,7 @@ function updateToggleUI() {
 
 // Global switch function called by the UI buttons
 window.switchViewLayer = function(layer) {
-  if (typeof currentLayer !== 'undefined') {
-    currentLayer = layer;
-  }
+  window.currentLayer = layer;
   updateToggleUI();
   renderChecklist();
   if (typeof logActivity === 'function') {
@@ -74,7 +80,7 @@ window.switchViewLayer = function(layer) {
   }
 };
 
-// Global render trigger called by playback / app.js
+// Global render triggers called by playback / app.js
 window.resetPlayback = function() {
   updateToggleUI();
   renderChecklist();
