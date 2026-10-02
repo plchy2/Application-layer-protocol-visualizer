@@ -3,85 +3,363 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProtoFlux | Dual-Panel Protocol Visualizer</title>
+  <title>ProtoFlux v2.0</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col">
 
-  <!-- Header -->
-  <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shadow-md">
+  <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur px-6 py-4 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="bg-gradient-to-tr from-sky-500 to-indigo-500 p-2 rounded-xl text-white shadow-lg">
-        <i class="fa-solid fa-network-wired text-xl"></i>
+      <div class="bg-blue-600 p-2 rounded-lg shadow-md shadow-blue-500/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
       </div>
       <div>
-        <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-          ProtoFlux <span class="text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono">v2.0</span>
+        <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          ProtoFlux <span class="text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full">v2.0</span>
         </h1>
-        <p class="text-xs text-slate-400">Interactive Dual-Panel Network Protocol Visualizer</p>
+        <p class="text-xs text-slate-400">Interactive Network Protocol Visualizer & Step Synchronizer</p>
       </div>
     </div>
   </header>
 
-  <!-- Dashboard -->
-  <main class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1600px] w-full mx-auto">
+  <main class="flex-1 p-6 grid grid-cols-12 gap-6 max-w-7xl mx-auto w-full">
+    <!-- Control Panel -->
+    <section class="col-span-12 lg:col-span-5 flex flex-col gap-4">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 flex flex-col gap-4 shadow-xl">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Control Panel</h2>
 
-    <!-- Left Panel -->
-    <section class="lg:col-span-5 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6">
-      <div class="border-b border-slate-800 pb-3">
-        <h2 class="font-bold text-slate-200 text-lg flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-sky-400"></i> Control Panel
-        </h2>
-      </div>
-
-      <form id="activity-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Target Domain / URL</label>
-          <input type="text" id="browse-url" value="example.com/index.html" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-sky-500">
+          <label class="block text-xs text-slate-400 mb-1">SELECT PROTOCOL MODE</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button id="modeBrowse" type="button" onclick="window.setMode('browse')" class="py-2 px-2 text-xs rounded-lg bg-blue-600 text-white font-medium cursor-pointer transition-all">Browsing</button>
+            <button id="modeStream" type="button" onclick="window.setMode('streaming')" class="py-2 px-2 text-xs rounded-lg bg-slate-800 text-slate-300 font-medium cursor-pointer transition-all">Streaming</button>
+            <button id="modeEmail" type="button" onclick="window.setMode('email')" class="py-2 px-2 text-xs rounded-lg bg-slate-800 text-slate-300 font-medium cursor-pointer transition-all">Email</button>
+          </div>
         </div>
-        <button type="submit" class="w-full py-2.5 bg-sky-500 text-white font-bold text-sm rounded-xl shadow hover:bg-sky-400 transition">
-          Execute Protocol Simulation
-        </button>
-      </form>
 
-      <div class="flex-1 flex flex-col min-h-[200px] bg-slate-950 rounded-xl border border-slate-800 p-3">
-        <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest pb-2 border-b border-slate-900">Terminal Execution Log</div>
-        <div id="terminal-log" class="flex-1 font-mono text-xs text-sky-400 pt-2 space-y-1 overflow-y-auto">
-          [System] ProtoFlux protocol engine initialized.
+        <div>
+          <label for="urlInput" class="block text-xs text-slate-400 mb-1">TARGET DOMAIN / ENDPOINT</label>
+          <input type="text" id="urlInput" value="example.com/index.html" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="flex gap-2">
+          <button id="simulateBtn" type="button" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg text-sm transition-colors shadow-lg shadow-blue-600/20 cursor-pointer">
+            Execute Protocol Simulation
+          </button>
+          <button id="pauseBtn" type="button" onclick="window.togglePause()" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-2.5 rounded-lg text-sm transition-colors cursor-pointer border border-slate-700 hidden">
+            Pause
+          </button>
+        </div>
+
+        <div class="mt-2">
+          <span class="text-[10px] uppercase font-mono text-slate-500 tracking-wider">Terminal Execution Log</span>
+          <div id="terminalLog" class="mt-1 bg-slate-950 border border-slate-800/80 rounded-lg p-3 h-48 overflow-y-auto font-mono text-xs text-slate-300 flex flex-col gap-1">
+            <span class="text-blue-400">[System] ProtoFlux engine initialized. Select mode & run.</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Right Panel -->
-    <section class="lg:col-span-7 bg-slate-900/50 border border-slate-800 rounded-2xl p-5 flex flex-col gap-6">
-      
-      <!-- Sequence Card Header WITH VIEW LAYER TOGGLE -->
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-list-check text-sky-400"></i>
-          <h2 class="font-bold text-slate-200">Protocol Sequence Checklist</h2>
+    <!-- Visual Simulation & Sequence Checklist -->
+    <section class="col-span-12 lg:col-span-7 flex flex-col gap-4">
+      <!-- Live Packet & Arrow Flow Visualizer Canvas -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 flex flex-col gap-3 shadow-xl">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Network Infrastructure Channel</span>
+          <span id="animStatus" class="text-[10px] font-mono text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">Idle</span>
         </div>
+        
+        <div class="relative w-full h-32 bg-slate-950 rounded-xl border border-slate-800/80 flex items-center justify-between px-6 overflow-hidden">
+          <!-- Workstation Client Node -->
+          <div class="flex flex-col items-center gap-1.5 z-10">
+            <div class="w-14 h-14 rounded-xl bg-slate-900 border border-blue-500/40 flex flex-col items-center justify-center text-blue-400 shadow-lg shadow-blue-500/10 p-2">
+              <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+              <span class="text-[9px] font-bold font-mono tracking-wider mt-0.5">CLIENT</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono">192.168.1.105</span>
+          </div>
+          
+          <!-- Transmission Channel Lines -->
+          <div class="absolute left-24 right-24 top-1/2 h-0.5 bg-slate-800 -translate-y-1/2"></div>
+          
+          <!-- Animated Packet Bubble with Directional Arrow -->
+          <div id="packetDot" class="absolute top-1/2 -translate-y-1/2 flex items-center justify-center px-3 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg shadow-blue-500/40 hidden z-20 font-mono text-xs font-bold transition-all border border-blue-400/30">
+            <span id="arrowSymbol" class="mr-1">➔</span>
+            <span id="packetLabel">DATA</span>
+          </div>
 
-        <!-- LAYER TOGGLE BUTTONS -->
-        <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
-          <button id="btn-layer-app" type="button" onclick="switchViewLayer('app')" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">
-            Application Layer
-          </button>
-          <button id="btn-layer-transport" type="button" onclick="switchViewLayer('transport')" class="px-3 py-1.5 rounded-lg bg-sky-500 text-white shadow transition">
-            Transport Layer (L4)
-          </button>
+          <!-- Remote Server Node -->
+          <div class="flex flex-col items-center gap-1.5 z-10">
+            <div class="w-14 h-14 rounded-xl bg-slate-900 border border-indigo-500/40 flex flex-col items-center justify-center text-indigo-400 shadow-lg shadow-indigo-500/10 p-2">
+              <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+              <span class="text-[9px] font-bold font-mono tracking-wider mt-0.5">SERVER</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-mono">104.21.80.12</span>
+          </div>
         </div>
       </div>
 
-      <!-- Checklist Container -->
-      <div id="protocol-checklist" class="space-y-3 flex-1 overflow-y-auto max-h-[500px]">
-        <!-- Rendered by visualizerEngine.js -->
+      <!-- Protocol Sequence Checklist -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 flex flex-col flex-1 min-h-[380px] shadow-xl">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Protocol Sequence Checklist</h2>
+
+          <div class="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs">
+            <button id="btnAppLayer" type="button" onclick="window.switchViewLayer('app')" class="px-3 py-1 rounded-md text-slate-400 cursor-pointer transition-all">Application Layer</button>
+            <button id="btnTransportLayer" type="button" onclick="window.switchViewLayer('transport')" class="px-3 py-1 rounded-md bg-blue-600 text-white font-medium shadow-sm cursor-pointer transition-all">Transport Layer (L4)</button>
+          </div>
+        </div>
+
+        <div id="sequenceList" class="flex-1 overflow-y-auto flex flex-col gap-2 pr-1">
+          <div class="text-center text-slate-500 py-12 text-sm">
+            Select a mode and click "Execute Protocol Simulation" to view simulation traces.
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <script src="js/app.js?v=2.0"></script>
-  <script src="js/visualizerEngine.js?v=2.0"></script>
+  <script>
+    window.selectedMode = 'browse';
+    window.globalFlowData = null;
+    window.currentActiveLayer = 'transport';
+    
+    // Animation control states
+    window.isPaused = false;
+    window.animationTimer = null;
+    window.currentSteps = [];
+    window.currentStepIndex = 0;
+
+    window.setMode = function(mode) {
+      window.selectedMode = mode;
+      const bBrowse = document.getElementById('modeBrowse');
+      const bStream = document.getElementById('modeStream');
+      const bEmail = document.getElementById('modeEmail');
+      const input = document.getElementById('urlInput');
+
+      [bBrowse, bStream, bEmail].forEach(b => {
+        if (b) b.className = "py-2 px-2 text-xs rounded-lg bg-slate-800 text-slate-300 font-medium cursor-pointer transition-all";
+      });
+
+      if (mode === 'browse') {
+        if (bBrowse) bBrowse.className = "py-2 px-2 text-xs rounded-lg bg-blue-600 text-white font-medium cursor-pointer transition-all";
+        if (input) input.value = "example.com/index.html";
+      } else if (mode === 'streaming') {
+        if (bStream) bStream.className = "py-2 px-2 text-xs rounded-lg bg-blue-600 text-white font-medium cursor-pointer transition-all";
+        if (input) input.value = "video.stream.net/live/ch1.m3u8";
+      } else if (mode === 'email') {
+        if (bEmail) bEmail.className = "py-2 px-2 text-xs rounded-lg bg-blue-600 text-white font-medium cursor-pointer transition-all";
+        if (input) input.value = "smtp.mailserver.com:587";
+      }
+    };
+
+    window.switchViewLayer = function(layer) {
+      window.currentActiveLayer = layer;
+      const btnApp = document.getElementById('btnAppLayer');
+      const btnTransport = document.getElementById('btnTransportLayer');
+
+      if (btnApp && btnTransport) {
+        if (layer === 'app') {
+          btnApp.className = "px-3 py-1 rounded-md bg-blue-600 text-white font-medium shadow-sm cursor-pointer transition-all";
+          btnTransport.className = "px-3 py-1 rounded-md text-slate-400 cursor-pointer transition-all";
+        } else {
+          btnTransport.className = "px-3 py-1 rounded-md bg-blue-600 text-white font-medium shadow-sm cursor-pointer transition-all";
+          btnApp.className = "px-3 py-1 rounded-md text-slate-400 cursor-pointer transition-all";
+        }
+      }
+
+      if (window.globalFlowData) {
+        window.renderSequence(window.globalFlowData);
+      }
+    };
+
+    window.togglePause = function() {
+      window.isPaused = !window.isPaused;
+      const pauseBtn = document.getElementById('pauseBtn');
+      const animStatus = document.getElementById('animStatus');
+
+      if (window.isPaused) {
+        if (pauseBtn) pauseBtn.textContent = 'Resume';
+        if (animStatus) animStatus.textContent = 'Paused';
+        window.logTerminal(`Animation paused. Click Resume to continue.`);
+      } else {
+        if (pauseBtn) pauseBtn.textContent = 'Pause';
+        if (animStatus) animStatus.textContent = 'Resuming...';
+        window.logTerminal(`Resuming animation...`);
+        window.animateNext();
+      }
+    };
+
+    window.triggerStepHighlight = function(stepNum, isClientToServer, label) {
+      // Highlight card step
+      const allCards = document.querySelectorAll('.step-card');
+      allCards.forEach(card => {
+        card.classList.remove('border-blue-500', 'bg-blue-950/40', 'scale-[1.01]');
+        card.classList.add('border-slate-800/80', 'bg-slate-950/60');
+      });
+
+      const activeCard = document.getElementById(`step-card-${stepNum}`);
+      if (activeCard) {
+        activeCard.classList.remove('border-slate-800/80', 'bg-slate-950/60');
+        activeCard.classList.add('border-blue-500', 'bg-blue-950/40', 'scale-[1.01]');
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      // Animate Packet Arrow
+      const dot = document.getElementById('packetDot');
+      const arrowSymbol = document.getElementById('arrowSymbol');
+      const packetLabel = document.getElementById('packetLabel');
+
+      if (dot && arrowSymbol && packetLabel) {
+        dot.classList.remove('hidden');
+        arrowSymbol.textContent = isClientToServer ? '➔' : '⬅';
+        packetLabel.textContent = label || (isClientToServer ? 'REQ' : 'RES');
+
+        dot.style.transition = 'none';
+        dot.style.left = isClientToServer ? '18%' : '78%';
+
+        setTimeout(() => {
+          dot.style.transition = 'left 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
+          dot.style.left = isClientToServer ? '78%' : '18%';
+        }, 50);
+      }
+    };
+
+    window.animateNext = function() {
+      if (window.isPaused) return;
+
+      const dot = document.getElementById('packetDot');
+      const animStatus = document.getElementById('animStatus');
+      const pauseBtn = document.getElementById('pauseBtn');
+
+      if (window.currentStepIndex >= window.currentSteps.length) {
+        if (dot) dot.classList.add('hidden');
+        if (pauseBtn) pauseBtn.classList.add('hidden');
+        if (animStatus) animStatus.textContent = "Simulation Complete";
+        window.logTerminal(`Simulation flow completed successfully.`, 'success');
+        return;
+      }
+
+      const step = window.currentSteps[window.currentStepIndex];
+      const isClientToServer = !step.direction || step.direction.includes('Client → Server');
+
+      if (animStatus) animStatus.textContent = `[Step ${step.step}] ${step.protocol}`;
+
+      window.triggerStepHighlight(step.step, isClientToServer, step.flags || 'DATA');
+
+      window.currentStepIndex++;
+      window.animationTimer = setTimeout(window.animateNext, 950);
+    };
+
+    window.runPacketAnimation = function(steps) {
+      if (window.animationTimer) clearTimeout(window.animationTimer);
+
+      window.currentSteps = steps || [];
+      window.currentStepIndex = 0;
+      window.isPaused = false;
+
+      const pauseBtn = document.getElementById('pauseBtn');
+      if (pauseBtn) {
+        pauseBtn.textContent = 'Pause';
+        pauseBtn.classList.remove('hidden');
+      }
+
+      window.animateNext();
+    };
+
+    window.renderSequence = function(data) {
+      const container = document.getElementById('sequenceList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const steps = (window.currentActiveLayer === 'app') ? data.app_flow : data.transport_flow;
+      if (!steps || steps.length === 0) {
+        container.innerHTML = `<div class="text-center text-slate-500 py-12 text-sm">No sequence data found for this layer.</div>`;
+        return;
+      }
+
+      steps.forEach((item) => {
+        const card = document.createElement('div');
+        const isClientToServer = !item.direction || item.direction.includes('Client → Server');
+        
+        card.id = `step-card-${item.step}`;
+        card.className = "step-card bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 flex flex-col gap-1 transition-all cursor-pointer hover:border-blue-400/80";
+
+        // Hover event to trigger packet arrow animation on demand
+        card.onmouseenter = () => {
+          window.triggerStepHighlight(item.step, isClientToServer, item.flags || 'DATA');
+        };
+
+        let extraFlags = item.flags ? `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] px-1.5 py-0.5 rounded font-mono">${item.flags}</span>` : '';
+        let directionBadge = item.direction ? `<span class="text-[10px] font-mono text-slate-400">${item.direction}</span>` : '';
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs font-mono">${item.step}</span>
+              <span class="text-xs font-semibold text-slate-200">${item.protocol}</span>
+              ${extraFlags}
+            </div>
+            <div class="flex items-center gap-2">
+              ${directionBadge}
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/60 text-slate-400">${item.layer}</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 mt-1 pl-7">${item.summary || item.details}</p>
+        `;
+        container.appendChild(card);
+      });
+    };
+
+    window.logTerminal = function(message, type = 'info') {
+      const log = document.getElementById('terminalLog');
+      if (!log) return;
+      const entry = document.createElement('span');
+      if (type === 'error') entry.className = "text-red-400";
+      else if (type === 'success') entry.className = "text-emerald-400";
+      else entry.className = "text-slate-300";
+
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      log.appendChild(entry);
+      log.scrollTop = log.scrollHeight;
+    };
+
+    async function handleSimulate() {
+      const urlInput = document.getElementById('urlInput');
+      const urlVal = urlInput ? urlInput.value.trim() : "example.com";
+      window.logTerminal(`Running ${window.selectedMode.toUpperCase()} protocol trace for: ${urlVal}...`);
+
+      try {
+        const res = await fetch(`/api/simulate/${window.selectedMode}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: urlVal })
+        });
+
+        if (!res.ok) throw new Error(`HTTP Status ${res.status}`);
+
+        const data = await res.json();
+        window.globalFlowData = data;
+        window.logTerminal(`Trace response received. Starting interactive playback...`, 'success');
+        window.renderSequence(data);
+
+        const activeSteps = (window.currentActiveLayer === 'app') ? data.app_flow : data.transport_flow;
+        window.runPacketAnimation(activeSteps);
+      } catch (err) {
+        window.logTerminal(`Simulation error: ${err.message}`, 'error');
+      }
+    }
+
+    function initEvents() {
+      const simBtn = document.getElementById('simulateBtn');
+      if (simBtn) simBtn.onclick = handleSimulate;
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initEvents);
+    } else {
+      initEvents();
+    }
+  </script>
 </body>
 </html>
